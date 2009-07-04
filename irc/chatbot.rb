@@ -17,17 +17,17 @@ class Chatbot < IRC
 
     IRCEvent.add_callback('privmsg') do |event|
       @actions.each_pair do |match_exp, block|
-	begin
-	  @logger.debug "match_exp = #{match_exp}"
-	  match_data = event.message.match match_exp
-	  if match_data
-	    @logger.debug "MATCH"
-	    block.call event, match_data
-	  end
-	rescue
-	  @logger.error "ERROR"
-	  @logger.error $!
-	end
+        begin
+          @logger.debug "match_exp = #{match_exp}"
+          match_data = event.message.match match_exp
+          if match_data
+            @logger.debug "MATCH"
+            block.call event, match_data
+          end
+        rescue
+          @logger.error "ERROR"
+          @logger.error $!
+        end
       end
     end
   end

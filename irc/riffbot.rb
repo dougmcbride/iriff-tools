@@ -100,9 +100,9 @@ class Riffbot < Chatbot
         :sold  => tr.search('td/strong').first.text,
         :'$' => tr.search('td/strong').last.text[1..255],
         :views => tr.search('td')[2].text,
-	:seller => "##{top_seller_rank}",
-	:short => "##{top_shorts_rank}",
-	:iriff => "##{top_50_rank}"
+        :seller => "##{top_seller_rank}",
+        :short => "##{top_shorts_rank}",
+        :iriff => "##{top_50_rank}"
 
       hash
     end
