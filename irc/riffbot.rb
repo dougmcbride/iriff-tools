@@ -59,7 +59,15 @@ class Riffbot < Chatbot
     add_actions({
       /^(riff.*report|\.)$/ => lambda {|e,m| send_report e, @riff_stats},
       /^(riff.*top50|\.50)$/ => lambda {|e,m| @options[:top_50] = !@options[:top_50]; reply e, "Top 50 announcment mode: #{@options[:top_50] ? 'active' : 'passive'}."},
-      /^(?:riff.*interval|\.i) (\d+)$/ => lambda {|e,m| @options[:interval] = m[1].to_i; reply e, "Sleep interval set to #{@options[:interval]} minutes."},
+      /^(?:riff.*interval|\.i) (\d+)$/ => lambda {|e,m|
+        i = m[1].to_i
+        if i > 4
+          @options[:interval] = m[1].to_i
+          reply e, "Sleep interval set to #{@options[:interval]} minutes."
+        else
+          reply e, "Sleep interval cannot be less than 5 minutes."
+        end
+      },
       /^(riff.*help|\.\?)$/ => lambda {|e,m| print_legend e}
     })
   end
