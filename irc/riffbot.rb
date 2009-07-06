@@ -96,6 +96,7 @@ class Riffbot < Chatbot
           sleep @options[:interval] * 60
         rescue 
           @logger.error $!
+          exit 1
         end
       end
     end
