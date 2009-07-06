@@ -45,6 +45,10 @@ class Riffbot < Chatbot
 
           @logger.debug changed_riffs.pretty_inspect
 
+          # Unfortunately the top 50 ranking seems to twitch quite a bit, so don't
+          # report it when it changes.
+          changed_riffs.each{|s| s.delete :iriff}
+
           send_report event, changed_riffs
           @riff_stats = new_stats
 
