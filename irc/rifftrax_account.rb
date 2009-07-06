@@ -77,13 +77,13 @@ class RifftraxAccount
 
   def top_shorts_rank(page, product_href)
     rank = /^(\d+)/
-    page.search("//div[@class='panel-pane'][not(@id)]//div[@class='top-five']//a[@href='#{href}']").text.match(rank)[0] rescue 'none'
+    page.search("//div[@class='panel-pane'][not(@id)]//div[@class='top-five']//a[@href='#{product_href}']").text.match(rank)[0] rescue 'none'
   end
 
   def top_50_rank(page, product_href)
     # No digit embedded in text here, have to iterate though to find out our rank number
     # Also the hrefs have the leading '/' here so we have to look for it.
-    iriffs_page.search('div[@id="iriffs-top-50"]//li//a').map{|e| e.get_attribute 'href'}.index("/#{href}") + 1 rescue 'none'
+    page.search('div[@id="iriffs-top-50"]//li//a').map{|e| e.get_attribute 'href'}.index("/#{product_href}") + 1 rescue 'none'
   end
 
   def get_youtube_stats(agent, video_token)
