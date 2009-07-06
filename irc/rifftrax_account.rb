@@ -49,8 +49,8 @@ class RifftraxAccount
       a = product_row.search('td/a').first
       title = a.text
       href = a.get_attribute('href').chop_first_char # leading '/'
-      @logger.debug "title = #{title}"
-      @logger.debug "href = #{href}"
+      @logger.info "title = #{title}"
+      @logger.info "href = #{href}"
 
       # Now to get our rankings
       iriffs_page = agent.get @iriffs_url
