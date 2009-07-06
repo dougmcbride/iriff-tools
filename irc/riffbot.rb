@@ -10,19 +10,22 @@ options = {
   :port => '6667',
   :server => 'irc.freenode.net',
   :top_50 => false,
-  :interval => 5
+  :interval => 5,
+  :logging => :warn
 }
 
 optparse = OptionParser.new do |opts|
   opts.banner = "Usage: #{$0} [options]"
 
-  opts.on('-c', '--channel NAME', 'Specify IRC channel to /join.') {|c| options[:channel] = c}
-  opts.on('-f', '--full-name NICK', 'Specify the bot\'s IRC full name.') {|n| options[:full] = n}
-  opts.on('-n', '--nick NICK', 'Specify the bot\'s IRC nick.') {|n| options[:nick] = n}
-  opts.on('-s', '--server HOST', 'Specify IRC server hostname.') {|h| options[:server] = h}
-  opts.on('-p', '--port NUMBER', 'Specify IRC port number.') {|p| options[:port] = p}
-  opts.on('-t', '--[no-]top_50', 'Report top 50 rankings (they twitch a lot).') {options[:top_50] = true}
-  opts.on('-i', '--interval', 'Number of minutes to sleep between checks') do |interval|
+  opts.on('-c', '--channel NAME', 'Specify IRC channel to /join.') {|options[:channel]|}
+  opts.on('-f', '--full-name NICK', 'Specify the bot\'s IRC full name.') {|options[:full]|}
+  opts.on('-n', '--nick NICK', 'Specify the bot\'s IRC nick.') {|options[:nick]|}
+  opts.on('-s', '--server HOST', 'Specify IRC server hostname.') {|options[:server]|}
+  opts.on('-p', '--port NUMBER', Integer, 'Specify IRC port number.') {|options[:port]|}
+  opts.on('-t', '--top-50', 'Actively report top 50 rankings (they twitch a lot).') {|options[:top_50]|}
+  opts.on('-l', '--logging LEVEL', [:debug, :info, :warn, :error, :fatal], 'Logging level (debug, info, warn, error, fatal)') {|options[:logging]|}
+
+  opts.on('-i', '--interval MINUTES', Integer, 'Number of minutes to sleep between checks') do |interval|
     fail "Interval minimum is 5 minutes." unless interval >= 5
     options[:interval] = interval
   end
@@ -49,7 +52,7 @@ class Riffbot < Chatbot
     # We keep the latest stats in this Hash.
     @riff_stats = {}
 
-    @logger.level = Logger::DEBUG
+    @logger.level = eval "Logger::#{options[:logging].to_s.upcase}"
     @account = RifftraxAccount.new :user => USER_ID, :logger => @logger
 
     # The channel to join.
