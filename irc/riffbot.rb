@@ -9,7 +9,8 @@ options = {
   :nick => 'riffbot',
   :port => '6667',
   :server => 'irc.freenode.net',
-  :top_50 => false
+  :top_50 => false,
+  :interval => 5
 }
 
 optparse = OptionParser.new do |opts|
@@ -21,6 +22,10 @@ optparse = OptionParser.new do |opts|
   opts.on('-s', '--server HOST', 'Specify IRC server hostname.') {|h| options[:server] = h}
   opts.on('-p', '--port NUMBER', 'Specify IRC port number.') {|p| options[:port] = p}
   opts.on('-t', '--[no-]top_50', 'Report top 50 rankings (they twitch a lot).') {options[:top_50] = true}
+  opts.on('-i', '--interval', 'Number of minutes to sleep between checks') do |interval|
+    fail "Interval minimum is 5 minutes." unless interval >= 5
+    options[:interval] = interval
+  end
 
   opts.on_tail('-h', '--help', 'Display this screen') {puts opts; exit}
 end
@@ -79,7 +84,7 @@ class Riffbot < Chatbot
           send_report event, changed_riffs
           @riff_stats = new_stats
 
-          sleep 300  # Be nice to rifftrax.com by not decreasing this!
+          sleep interval * 60
         rescue 
           @logger.error $!
         end
