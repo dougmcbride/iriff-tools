@@ -1,7 +1,31 @@
-require 'rubygems'
+require 'optparse'
 require 'pp'
 require 'chatbot'
 require 'rifftrax_account'
+
+options = {
+  :channel => 'test',
+  :full => 'iRiff report bot',
+  :nick => 'riffbot',
+  :port => '6667',
+  :server => 'irc.freenode.net',
+  :top_50 => false
+}
+
+optparse = OptionParser.new do |opts|
+  opts.banner = "Usage: #{$0} [options]"
+
+  opts.on('-c', '--channel NAME', 'Specify IRC channel to /join.') {|c| options[:channel] = c}
+  opts.on('-f', '--full-name NICK', 'Specify the bot\'s IRC full name.') {|n| options[:full] = n}
+  opts.on('-n', '--nick NICK', 'Specify the bot\'s IRC nick.') {|n| options[:nick] = n}
+  opts.on('-s', '--server HOST', 'Specify IRC server hostname.') {|h| options[:server] = h}
+  opts.on('-p', '--port NUMBER', 'Specify IRC port number.') {|p| options[:port] = p}
+  opts.on('-t', '--[no-]top_50', 'Report top 50 rankings (they twitch a lot).') {options[:top_50] = true}
+
+  opts.on_tail('-h', '--help', 'Display this screen') {puts opts; exit}
+end
+
+optparse.parse!
 
 class Hash
   # This is used to tell when info has changed between checks
@@ -13,8 +37,9 @@ end
 class Riffbot < Chatbot
   USER_ID = 25482 
 
-  def initialize(*args)
-    super
+  def initialize(options)
+    super options[:nick], options[:server], options[:port], options[:full]
+    @options = options
 
     # We keep the latest stats in this Hash.
     @riff_stats = {}
@@ -23,7 +48,7 @@ class Riffbot < Chatbot
     @account = RifftraxAccount.new :user => USER_ID, :logger => @logger
 
     # The channel to join.
-    add_room "##{ARGV[0] || 'test'}"
+    add_room('#' + options[:channel])
 
     # Here you can modify the trigger phrase
     add_actions({ /riff.*report|^\.$/ => lambda {|e,m| send_report e, @riff_stats} })
@@ -45,9 +70,7 @@ class Riffbot < Chatbot
 
           @logger.debug changed_riffs.pretty_inspect
 
-          # Unfortunately the top 50 ranking seems to twitch quite a bit, so don't
-          # report it when it changes.
-          changed_riffs.each{|s| s.delete :iriff}
+          changed_riffs.each{|s| s.delete :iriff} unless @options[:top_50]
 
           send_report event, changed_riffs
           @riff_stats = new_stats
@@ -80,4 +103,4 @@ class Riffbot < Chatbot
   end
 end
 
-Riffbot.new("ruffbot", "irc.sneakyfrog.com", "2665", "RiffBot").start
+Riffbot.new(options).start
