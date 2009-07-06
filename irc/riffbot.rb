@@ -60,7 +60,9 @@ class Riffbot < Chatbot
     start_polling_thread event unless @polling_thread
 
     riff_stats.each do |title, stats|
-      names = STAT_NAMES.select {|x| stats[x.to_sym]}
+      # get the list of names that actually have values
+      names = RifftraxAccount::STAT_NAMES.select {|x| stats[x.to_sym]}
+
       reply event, report_string(title, stats, names) unless names.empty?
     end
   end
