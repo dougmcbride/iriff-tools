@@ -58,7 +58,8 @@ class Riffbot < Chatbot
     # Here you can modify the trigger phrase
     add_actions({
       /^(riff.*report|\.)$/ => lambda {|e,m| send_report e, @riff_stats},
-      /^(riff.*top50|\.50)$/ => lambda {|e,m| options[:top_50] = !options[:top_50]; reply e, "Top 50 announcment mode: #{options[:top_50] ? 'active' : 'passive'}."},
+      /^(riff.*top50|\.50)$/ => lambda {|e,m| @options[:top_50] = !@options[:top_50]; reply e, "Top 50 announcment mode: #{@options[:top_50] ? 'active' : 'passive'}."},
+      /^(?:riff.*interval|\.i) (\d+)$/ => lambda {|e,m| @options[:interval] = m[1].to_i; reply e, "Sleep interval set to #{@options[:interval]} minutes."},
       /^(riff.*help|\.\?)$/ => lambda {|e,m| print_legend e}
     })
   end
@@ -84,7 +85,7 @@ class Riffbot < Chatbot
           send_report event, changed_riffs
           @riff_stats = new_stats
 
-          sleep interval * 60
+          sleep @options[:interval] * 60
         rescue 
           @logger.error $!
         end
