@@ -51,7 +51,11 @@ class Riffbot < Chatbot
     add_room('#' + options[:channel])
 
     # Here you can modify the trigger phrase
-    add_actions({ /riff.*report|^\.$/ => lambda {|e,m| send_report e, @riff_stats} })
+    add_actions({
+      /^(riff.*report|\.)$/ => lambda {|e,m| send_report e, @riff_stats},
+      /^(riff.*top50|\.50)$/ => lambda {|e,m| options[:top_50] = !options[:top_50]; reply e, "Top 50 announcment mode: #{options[:top_50] ? 'active' : 'passive'}."},
+      /^(riff.*help|\.\?)$/ => lambda {|e,m| print_legend e}
+    })
   end
 
   def start_polling_thread(event)
@@ -100,6 +104,12 @@ class Riffbot < Chatbot
     @logger.debug names.pretty_inspect
 
     "#{title} -> " + names.map {|n| "#{n}:#{stats[n.to_sym]}"}.join(' ')
+  end
+
+  def print_legend(event)
+    RifftraxAccount::STAT_NAMES.each do |name|
+      reply event, name
+    end
   end
 end
 
