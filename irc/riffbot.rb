@@ -6,7 +6,7 @@ require 'rifftrax_account'
 class Hash
   # This is used to tell when info has changed between checks
   def diff(h2)
-    self.dup.delete_if { |k, v| h2[k] == v }.merge(h2.dup.delete_if { |k, v| self.has_key?(k) })
+    self.dup.delete_if {|k, v| h2[k] == v}.merge(h2.dup.delete_if {|k, v| self.has_key?(k)})
   end
 end
 
@@ -16,12 +16,16 @@ class Riffbot < Chatbot
   def initialize(*args)
     super
 
+    # We keep the latest stats in this Hash.
     @riff_stats = {}
+
     @logger.level = Logger::DEBUG
     @account = RifftraxAccount.new :user => USER_ID, :logger => @logger
 
+    # The channel to join.
     add_room "##{ARGV[0] || 'test'}"
 
+    # Here you can modify the trigger phrase
     add_actions({ /riff.*report|^\.$/ => lambda {|e,m| send_report e, @riff_stats} })
   end
 
@@ -31,6 +35,9 @@ class Riffbot < Chatbot
         begin
           new_stats = @account.get_iriff_stats
 
+          # Here we make new Hashes which are the diffs between
+          # What we have stored and what we just got, to see what we
+          # need to announce.
           changed_riffs = new_stats.keys.inject({}) do |hash, title|
             hash[title] = new_stats[title].diff(@riff_stats[title] || {})
             hash

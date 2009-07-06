@@ -1,6 +1,12 @@
 require 'rubygems'
 require 'mechanize'
 
+class String
+  def chop_first_char
+    self[1..-1]
+  end
+end
+
 class RifftraxAccount
   BASE_RT_URL = 'http://www.rifftrax.com'
   STAT_NAMES = %w(views sold $ yt rt->yt seller short iriff)
@@ -24,45 +30,60 @@ class RifftraxAccount
     agent = create_agent
 
     sales_report_page = agent.get @sales_report_url
-    @logger.debug "sales_report_page=#{sales_report_page}"
-
     sales_report_page = rifftrax_login(sales_report_page) if sales_report_page.search(SALES_HEADING).empty?
-    @logger.info "Logged in to rifftrax.com"
 
     product_list_page = agent.get @product_list_url
+    # Iterate through product <TD> elements
     video_sample_urls = product_list_page.search(PRODUCT_TDS).inject([]) do |list,td|
-      @logger.debug "#{BASE_RT_URL}/node/#{td.text}/edit"
-      edit_page = agent.get "#{BASE_RT_URL}/node/#{td.text}/edit"
-      edit_page.search(VIDEO_SAMPLE_EDIT_FIELD).first.get_attribute('value') =~ /v=(.+)/
-      fail "Couldn't parse video token" unless $1
-      list << $1
+      product_edit_url = "#{BASE_RT_URL}/node/#{td.text}/edit"
+      @logger.debug "product_edit_url = #{product_edit_url}"
+      product_edit_page = agent.get product_edit_url
+      video_sample_url = product_edit_page.search(VIDEO_SAMPLE_EDIT_FIELD).first.get_attribute('value')
+      list << /v=(.+)/.match(video_sample_url)[1]
     end
 
-    sales_report_page.search('//tbody/tr').inject({}) do |hash,tr|
+    # Iterate though product <TR> elements
+    sales_report_page.search('//tbody/tr').inject({}) do |hash, product_row|
       ustats = get_youtube_stats agent, video_sample_urls.shift
 
-      a = tr.search('td/a').first
+      a = product_row.search('td/a').first
       title = a.text
-      href = a.get_attribute('href')[1..-1] # Chop off the first '/'
+      href = a.get_attribute('href').chop_first_char # leading '/'
       @logger.debug "title = #{title}"
       @logger.debug "href = #{href}"
 
+      # Now to get our rankings
       iriffs_page = agent.get @iriffs_url
-      rank = /^(\d+)/
-      top_seller_rank = iriffs_page.search("//div[@id='iriffs-top-sellers']//a[@href='#{href}']").text.match(rank)[0] rescue 'none'
-      top_shorts_rank = iriffs_page.search("//div[@class='panel-pane'][not(@id)]//div[@class='top-five']//a[@href='#{href}']").text.match(rank)[0] rescue 'none'
-      top_50_rank = iriffs_page.search('div[@id="iriffs-top-50"]//li//a').map{|e| e.get_attribute 'href'}.index("/#{href}") + 1 rescue 'none'
+      top_seller_rank = top_seller_rank iriffs_page, href
+      top_shorts_rank = top_shorts_rank iriffs_page, href
+      top_50_rank = top_50_rank iriffs_page, href
 
       hash[title] = ustats.merge \
-        :sold  => tr.search('td/strong').first.text,
-        :'$' => tr.search('td/strong').last.text[1..-1],
-        :views => tr.search('td')[2].text,
+        :sold  => product_row.search('td/strong').first.text,
+        :'$' => product_row.search('td/strong').last.text.chop_first_char,  # '$'
+        :views => product_row.search('td')[2].text,
         :seller => "##{top_seller_rank}",
         :short => "##{top_shorts_rank}",
         :iriff => "##{top_50_rank}"
 
       hash
     end
+  end
+
+  def top_seller_rank(page, product_href)
+    rank = /^(\d+)/
+    page.search("//div[@id='iriffs-top-sellers']//a[@href='#{product_href}']").text.match(rank)[0] rescue 'none'
+  end
+
+  def top_shorts_rank(page, product_href)
+    rank = /^(\d+)/
+    page.search("//div[@class='panel-pane'][not(@id)]//div[@class='top-five']//a[@href='#{href}']").text.match(rank)[0] rescue 'none'
+  end
+
+  def top_50_rank(page, product_href)
+    # No digit embedded in text here, have to iterate though to find out our rank number
+    # Also the hrefs have the leading '/' here so we have to look for it.
+    iriffs_page.search('div[@id="iriffs-top-50"]//li//a').map{|e| e.get_attribute 'href'}.index("/#{href}") + 1 rescue 'none'
   end
 
   def get_youtube_stats(agent, video_token)
@@ -84,7 +105,7 @@ class RifftraxAccount
   end
 
   def rifftrax_login(page)
-    @logger.info "Logging in to rifftrax.com"
+    @logger.info "Trying login to rifftrax.com"
     form = page.forms[1]
     form['name'] = 'username'
     form['pass'] = 'password'
