@@ -86,9 +86,9 @@ class Riffbot < Chatbot
             hash
           end
 
-          @logger.debug changed_riffs.pretty_inspect
+          @logger.info "changed_riffs = #{changed_riffs.pretty_inspect}"
 
-          changed_riffs.each{|s| s.delete :iriff} unless @options[:top_50]
+          changed_riffs.each{|s| s.last.delete :iriff} unless @options[:top_50]
 
           send_report event, changed_riffs
           @riff_stats = new_stats
