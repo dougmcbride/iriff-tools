@@ -43,6 +43,8 @@ class RifftraxAccount
       list << /v=(.+)/.match(video_sample_url)[1]
     end
 
+    iriffs_page = agent.get @iriffs_url
+
     # Iterate though product <TR> elements
     sales_report_page.search('//tbody/tr').inject({}) do |hash, product_row|
       ustats = get_youtube_stats agent, video_sample_urls.shift
@@ -53,8 +55,7 @@ class RifftraxAccount
       @logger.info "title = #{title}"
       @logger.info "href = #{href}"
 
-      # Now to get our rankings
-      iriffs_page = agent.get @iriffs_url
+      # Now extract our rankings
       top_seller_rank = top_seller_rank iriffs_page, href
       top_shorts_rank = top_shorts_rank iriffs_page, href
       top_50_rank = top_50_rank iriffs_page, href
