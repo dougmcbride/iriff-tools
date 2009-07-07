@@ -17,6 +17,8 @@ options = {
 optparse = OptionParser.new do |opts|
   opts.banner = "Usage: #{$0} [options]"
 
+  opts.on('-u', '--username USERNAME', 'Specify rifftrax.com username.') {|options[:username]|}
+  opts.on('-w', '--password PASSWORD', 'Specify rifftrax.com password.') {|options[:password]|}
   opts.on('-c', '--channel NAME', 'Specify IRC channel to /join.') {|options[:channel]|}
   opts.on('-f', '--full-name NICK', 'Specify the bot\'s IRC full name.') {|options[:full]|}
   opts.on('-n', '--nick NICK', 'Specify the bot\'s IRC nick.') {|options[:nick]|}
@@ -53,7 +55,12 @@ class Riffbot < Chatbot
     @riff_stats = {}
 
     @logger.level = eval "Logger::#{options[:logging].to_s.upcase}"
-    @account = RifftraxAccount.new :user => USER_ID, :logger => @logger
+
+    @account = RifftraxAccount.new \
+      :user => USER_ID,
+      :logger => @logger,
+      :username => options[:username],
+      :password => options[:password]
 
     # The channel to join.
     add_room('#' + options[:channel])

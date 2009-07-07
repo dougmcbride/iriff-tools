@@ -15,10 +15,11 @@ class RifftraxAccount
   SALES_HEADING = "//h1[. ='Product Sales']"
 
   def initialize(options)
-    @user_id = options[:user]
+    @options = options
     @logger = options[:logger]
-    @sales_report_url = "#{BASE_RT_URL}/rifftrax/register?destination=user%2F#{@user_id}%2Fselling%2Freports%2Fproduct"
-    @product_list_url = "#{BASE_RT_URL}/user/#{@user_id}/selling"
+    user_id = options[:user]
+    @sales_report_url = "#{BASE_RT_URL}/rifftrax/register?destination=user%2F#{user_id}%2Fselling%2Freports%2Fproduct"
+    @product_list_url = "#{BASE_RT_URL}/user/#{user_id}/selling"
     @iriffs_url = "#{BASE_RT_URL}/iriffs"
   end
 
@@ -107,8 +108,8 @@ class RifftraxAccount
   def rifftrax_login(page)
     @logger.info "Trying login to rifftrax.com"
     form = page.forms[1]
-    form['name'] = 'username'
-    form['pass'] = 'password'
+    form['name'] = @options[:username]
+    form['pass'] = @options[:password]
     form.click_button
   end  
 end
