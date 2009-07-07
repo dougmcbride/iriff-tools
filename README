@@ -18,3 +18,52 @@ Usage: riffbot.rb [options]
 
 Some of these have useful defaults, but at a minimum you'll want
 to supply --username, --password, --channel, and --server.
+
+In order to gather the stats, the bot:
+
+ - logs in as you
+
+ - scrapes your product page (/user/<your userid>/selling) to get
+   the edit page URLs
+
+ - visits these edit pages and scrapes the youtube sample URLs
+
+ - visits youtube.com and scrapes the view count on the sample and
+   the number of referrals from rifftrax.com
+
+ - visits the sales report page (/user/<your userid>/selling/reports/product)
+   and scrapes the view count, sales number, and total $ for each product
+
+ - visits the main iriff page (/iriffs) to get the ranking for each
+   product, if any
+ 
+
+I'd like to get the rating information for products, but that only
+seems to exist on the product page, and every hit on that page
+counts as a view, even if you're logged in and it's your product.
+This is also why I don't just get the youtube sample URL from the
+product page.
+
+The script enforces a minimum wait time of 5 minutes in between
+checks.  Please DO NOT decrease this out of respect for rifftrax.com's
+servers.  A few of us checking every five minutes shouldn't put a
+dent in their traffic.
+
+Once the bot joins your channel, you can tell it:
+
+  riff report (or .)
+
+    Start polling if you haven't already, and report the latest
+    stats.  From this point on the bot will report any changes in
+    stats that it finds.
+
+  riff top50 (or .50)
+
+    Toggle active reporting of the Top 50 list ranking for products.
+    I have this off by default as our products seems to have different
+    rankings every time the page is loaded, and this creates a lot
+    of chatter.
+
+  riff interval <m> (or .i <m>)
+
+    Change the polling interval to m minutes.
