@@ -6,15 +6,15 @@ which will monitor your iRiffs' vitals for you.
 Usage: riffbot.rb [options]
     -u, --username USERNAME          Specify rifftrax.com username.
     -w, --password PASSWORD          Specify rifftrax.com password.
-    -c, --channel NAME               Specify IRC channel to /join.
-    -f, --full-name NICK             Specify the bot's IRC full name.
-    -n, --nick NICK                  Specify the bot's IRC nick.
-    -s, --server HOST                Specify IRC server hostname.
-    -p, --port NUMBER                Specify IRC port number.
+    -c, --channel NAME               Specify IRC channel to /join. (test)
+    -f, --full-name NICK             Specify the bot's IRC full name. (iRiff report bot)
+    -n, --nick NICK                  Specify the bot's IRC nick. (riffbot)
+    -s, --server HOST                Specify IRC server hostname. (irc.freenode.net)
+    -p, --port NUMBER                Specify IRC port number. (6667)
     -t, --top-50                     Actively report top 50 rankings (they twitch a lot).
-    -l, --logging LEVEL              Logging level (debug, info, warn, error, fatal)
-    -i, --interval MINUTES           Number of minutes to sleep between checks
+    -l, --logging LEVEL              Logging level (debug, info, warn, error, fatal) (warn)
+    -i, --interval MINUTES           Number of minutes to sleep between checks (5)
     -h, --help                       Display this screen
 
-Some of these have useful defaults, but at a minimum you'll need
+Some of these have useful defaults, but at a minimum you'll want
 to supply --username, --password, --channel, and --server.
