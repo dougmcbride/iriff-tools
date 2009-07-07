@@ -1,4 +1,4 @@
-This is a place to open-source my tools for iRiff creators.  Coming
+This is a place to share my tools for iRiff creators.  Coming
 soon, the code for my iRiffs Facebook app.  For now, an IRC bot
 which will monitor your iRiffs' vitals for you.
 
@@ -49,7 +49,7 @@ This is also why I don't just get the youtube sample URL from the
 product page.
 
 The script enforces a minimum wait time of 5 minutes in between
-checks.  Please DO NOT decrease this out of respect for rifftrax.com's
+checks.  Please DO NOT decrease this in order to respect rifftrax.com's
 servers.  A few of us checking every five minutes shouldn't put a
 dent in their traffic.
 
@@ -64,10 +64,11 @@ Once the bot joins your channel, you can tell it:
   riff top50 (or .50)
 
     Toggle active reporting of the Top 50 list ranking for products.
-    I have this off by default as our products seems to have different
+    I have this off by default as our products seem to have different
     rankings every time the page is loaded, and this creates a lot
     of chatter.
 
   riff interval <m> (or .i <m>)
 
     Change the polling interval to m minutes.
+
