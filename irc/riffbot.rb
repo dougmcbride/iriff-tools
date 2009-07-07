@@ -10,7 +10,7 @@ options = {
   :port => '6667',
   :server => 'irc.freenode.net',
   :top_50 => false,
-  :interval => 5,
+  :interval => 10,
   :logging => :warn
 }
 
@@ -27,7 +27,7 @@ optparse = OptionParser.new do |opts|
   opts.on('-t', '--top-50', 'Actively report top 50 rankings (they twitch a lot).') {|options[:top_50]|}
   opts.on('-l', '--logging LEVEL', [:debug, :info, :warn, :error, :fatal], 'Logging level (debug, info, warn, error, fatal) (warn)') {|options[:logging]|}
 
-  opts.on('-i', '--interval MINUTES', Integer, 'Number of minutes to sleep between checks (5)') do |interval|
+  opts.on('-i', '--interval MINUTES', Integer, 'Number of minutes to sleep between checks (10)') do |interval|
     fail "Interval minimum is 5 minutes." unless interval >= 5
     options[:interval] = interval
   end
