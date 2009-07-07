@@ -2,6 +2,10 @@ This is a place to open-source my tools for iRiff creators.  Coming
 soon, the code for my iRiffs Facebook app.  For now, an IRC bot
 which will monitor your iRiffs' vitals for you.
 
+<shamelessplug> Team Swizzlebeef
+( http://www.rifftrax.com/iriffs/team-swizzlebeef ) has been using
+it happily for a while now. </shamelessplug>
+
 ~/Projects/iriff-tools/irc (master)$ ruby riffbot.rb --help
 Usage: riffbot.rb [options]
     -u, --username USERNAME          Specify rifftrax.com username.
