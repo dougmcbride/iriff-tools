@@ -9,17 +9,17 @@ end
 
 class RifftraxAccount
   BASE_RT_URL = 'http://www.rifftrax.com'
-  STAT_NAMES = %w(views sold $ yt rt->yt seller short iriff)
+  LOGIN_URL = "#{BASE_RT_URL}/rifftrax/register?destination=content"
   VIDEO_SAMPLE_EDIT_FIELD = "//input[@id='edit-field-sample-0-value']"
   PRODUCT_TDS = "//div[@id='content-area']/table/tbody/tr/td[1]"
   SALES_HEADING = "//h1[. ='Product Sales']"
+  MY_IRIFFS_LINK = "//a[. ='My iRiffs']"
+
+  STAT_NAMES = %w(views sold $ yt rt->yt seller short iriff)
 
   def initialize(options)
     @options = options
     @logger = options[:logger]
-    user_id = options[:user]
-    @sales_report_url = "#{BASE_RT_URL}/rifftrax/register?destination=user%2F#{user_id}%2Fselling%2Freports%2Fproduct"
-    @product_list_url = "#{BASE_RT_URL}/user/#{user_id}/selling"
     @iriffs_url = "#{BASE_RT_URL}/iriffs"
   end
 
@@ -29,11 +29,11 @@ class RifftraxAccount
 
   def get_iriff_stats
     agent = create_agent
+    main_page = rifftrax_login agent
 
-    sales_report_page = agent.get @sales_report_url
-    sales_report_page = rifftrax_login(sales_report_page) if sales_report_page.search(SALES_HEADING).empty?
+    product_list_url = main_page.search(MY_IRIFFS_LINK).first.get_attribute('href')
+    product_list_page = agent.get product_list_url
 
-    product_list_page = agent.get @product_list_url
     # Iterate through product <TD> elements
     video_sample_urls = product_list_page.search(PRODUCT_TDS).inject([]) do |list,td|
       product_edit_url = "#{BASE_RT_URL}/node/#{td.text}/edit"
@@ -45,6 +45,8 @@ class RifftraxAccount
 
     iriffs_page = agent.get @iriffs_url
 
+    sales_report_url = product_list_url + '/reports/product'
+    sales_report_page = agent.get sales_report_url
     # Iterate though product <TR> elements
     sales_report_page.search('//tbody/tr').inject({}) do |hash, product_row|
       ustats = get_youtube_stats agent, video_sample_urls.shift
@@ -106,9 +108,10 @@ class RifftraxAccount
     }
   end
 
-  def rifftrax_login(page)
+  def rifftrax_login(agent)
     @logger.info "Trying login to rifftrax.com"
-    form = page.forms[1]
+    login_page = agent.get LOGIN_URL
+    form = login_page.forms[1]
     form['name'] = @options[:username]
     form['pass'] = @options[:password]
     form.click_button

@@ -45,8 +45,6 @@ class Hash
 end
 
 class Riffbot < Chatbot
-  USER_ID = 25482 
-
   def initialize(options)
     super options[:nick], options[:server], options[:port], options[:full]
     @options = options
@@ -57,7 +55,6 @@ class Riffbot < Chatbot
     @logger.level = eval "Logger::#{options[:logging].to_s.upcase}"
 
     @account = RifftraxAccount.new \
-      :user => USER_ID,
       :logger => @logger,
       :username => options[:username],
       :password => options[:password]
