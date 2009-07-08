@@ -9,13 +9,27 @@ end
 
 class RifftraxAccount
   BASE_RT_URL = 'http://www.rifftrax.com'
-  LOGIN_URL = "#{BASE_RT_URL}/rifftrax/register?destination=content"
+  LOGIN_URL = "https://www.rifftrax.com/rifftrax/register?destination=content"
   VIDEO_SAMPLE_EDIT_FIELD = "//input[@id='edit-field-sample-0-value']"
   PRODUCT_TDS = "//div[@id='content-area']/table/tbody/tr/td[1]"
   SALES_HEADING = "//h1[. ='Product Sales']"
   MY_IRIFFS_LINK = "//a[. ='My iRiffs']"
 
   STAT_NAMES = %w(views sold $ yt rt->yt seller short iriff)
+  LEGEND = {
+    :views => 'Number of views of product page',
+    :sold => 'Number of sales for product',
+    :"$" => 'Total revenue from product',
+    :yt => 'Number of views of youtube sample video',
+    :"rt->yt" => 'Number of views embedded on RT.com (sample viewer on product page)',
+    :seller => 'Rank in last week\'s top seller list',
+    :short => 'Rank in last week\'s top shorts list',
+    :iriff => 'Rank in iRiff Top 50 list'
+  }
+
+  def self.legend_for(key)
+    LEGEND[key.to_sym]
+  end
 
   def initialize(options)
     @options = options

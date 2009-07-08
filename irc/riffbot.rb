@@ -45,6 +45,14 @@ class Hash
 end
 
 class Riffbot < Chatbot
+	HELP =<<EOT
+riff report: report latest gathered stats
+riff top50: togle active reporting of to 50 ranks
+riff interval <minutes>: set interval
+riff legend <stat name>: describe a stat (i.e. riff legend views)
+riff help: this
+EOT
+
   def initialize(options)
     super options[:nick], options[:server], options[:port], options[:full]
     @options = options
@@ -66,6 +74,7 @@ class Riffbot < Chatbot
     add_actions({
       /^(riff.*report|\.)$/ => lambda {|e,m| send_report e, @riff_stats},
       /^(riff.*top50|\.50)$/ => lambda {|e,m| @options[:top_50] = !@options[:top_50]; reply e, "Top 50 announcment mode: #{@options[:top_50] ? 'active' : 'passive'}."},
+      /^(?:riff.*legend|\.l) (\S+)/ => lambda {|e,m| reply e, RifftraxAccount.legend_for(m[1])},
       /^(?:riff.*interval|\.i) (\d+)$/ => lambda {|e,m|
         i = m[1].to_i
         if i > 4
@@ -75,7 +84,7 @@ class Riffbot < Chatbot
           reply e, "Sleep interval cannot be less than 5 minutes."
         end
       },
-      /^(riff.*help|\.\?)$/ => lambda {|e,m| print_legend e}
+      /^(riff.*help|\.\?)$/ => lambda {|e,m| HELP.each_line{|l| reply e, l}}
     })
   end
 
