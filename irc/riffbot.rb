@@ -119,7 +119,10 @@ EOT
   end
 
   def send_report(event, riff_stats)
-    start_polling_thread event unless @polling_thread
+    unless @polling_thread
+      reply event, "Starting polling with #{@options[:interval]}-minute breaks.  One sec..."
+      start_polling_thread event
+    end
 
     riff_stats.each do |title, stats|
       # get the list of names that actually have values
