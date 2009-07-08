@@ -38,7 +38,7 @@ class RifftraxAccount
   end
 
   def create_agent
-    WWW::Mechanize.new {|a| a.log = @logger}
+    WWW::Mechanize.new {|a| a.log = @logger; a.keep_alive = false}
   end
 
   def get_iriff_stats
