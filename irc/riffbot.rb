@@ -6,7 +6,7 @@ require 'rifftrax_account'
 options = {
   :channel => 'test',
   :full => 'iRiff report bot',
-  :nick => 'riffbot',
+  :nick => 'riffy',
   :port => '6667',
   :server => 'irc.freenode.net',
   :top_50 => false,

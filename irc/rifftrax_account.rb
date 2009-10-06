@@ -101,7 +101,7 @@ class RifftraxAccount
   def top_50_rank(page, product_href)
     # No digit embedded in text here, have to iterate though to find out our rank number
     # Also the hrefs have the leading '/' here so we have to look for it.
-    page.search('div[@id="iriffs-top-50"]//li//a').map{|e| e.get_attribute 'href'}.index("/#{product_href}") + 1 rescue 'none'
+    page.search("//h2[. ='Top 50 iRiffs']/following-sibling::div[@class=\"content\"]//li//a").map{|e| e.get_attribute 'href'}.index("/#{product_href}") + 1 rescue 'none'
   end
 
   def get_youtube_stats(agent, video_token)
