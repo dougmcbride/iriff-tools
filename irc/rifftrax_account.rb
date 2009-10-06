@@ -63,7 +63,7 @@ class RifftraxAccount
     sales_report_page = agent.get sales_report_url
     # Iterate though product <TR> elements
     sales_report_page.search('//tbody/tr').inject({}) do |hash, product_row|
-      ustats = get_youtube_stats agent, video_sample_urls.shift
+      ustats = get_youtube_stats agent, video_sample_urls.shift rescue {}
 
       a = product_row.search('td/a').first
       title = a.text

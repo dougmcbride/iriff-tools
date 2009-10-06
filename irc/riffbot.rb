@@ -73,8 +73,11 @@ EOT
     # Here you can modify the trigger phrase
     add_actions({
       /^(riff.*report|\.)$/ => lambda {|e,m| send_report e, @riff_stats},
+
       /^(riff.*top50|\.50)$/ => lambda {|e,m| @options[:top_50] = !@options[:top_50]; reply e, "Top 50 announcment mode: #{@options[:top_50] ? 'active' : 'passive'}."},
+
       /^(?:riff.*legend|\.l) (\S+)/ => lambda {|e,m| reply e, RifftraxAccount.legend_for(m[1])},
+
       /^(?:riff.*interval|\.i) (\d+)$/ => lambda {|e,m|
         i = m[1].to_i
         if i > 4
@@ -84,6 +87,7 @@ EOT
           reply e, "Sleep interval cannot be less than 5 minutes."
         end
       },
+
       /^(riff.*help|\.\?)$/ => lambda {|e,m| HELP.each_line{|l| reply e, l}}
     })
   end
@@ -110,6 +114,8 @@ EOT
           @riff_stats = new_stats
 
           sleep @options[:interval] * 60
+        rescue SocketError
+          @logger.error $!
         rescue 
           @logger.error $!
           exit 1
