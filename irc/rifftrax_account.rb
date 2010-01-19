@@ -9,11 +9,11 @@ end
 
 class RifftraxAccount
   BASE_RT_URL = 'http://www.rifftrax.com'
-  LOGIN_URL = "https://www.rifftrax.com/rifftrax/register?destination=content"
+  LOGIN_URL = "https://www.rifftrax.com/rifftrax/register?destination=user"
   VIDEO_SAMPLE_EDIT_FIELD = "//input[@id='edit-field-sample-0-value']"
   PRODUCT_TDS = "//div[@id='content-area']/table/tbody/tr/td[1]"
   SALES_HEADING = "//h1[. ='Product Sales']"
-  MY_IRIFFS_LINK = "//a[. ='My iRiffs']"
+  PRODUCTS_LINK = "//a[. ='Click here to view your products.']"
 
   STAT_NAMES = %w(views sold $ yt rt->yt seller short iriff)
   LEGEND = {
@@ -45,7 +45,7 @@ class RifftraxAccount
     agent = create_agent
     main_page = rifftrax_login agent
 
-    product_list_url = main_page.search(MY_IRIFFS_LINK).first.get_attribute('href')
+    product_list_url = main_page.search(PRODUCTS_LINK).first.get_attribute('href')
     product_list_page = agent.get product_list_url
 
     # Iterate through product <TD> elements
